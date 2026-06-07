@@ -1,0 +1,1 @@
+- [Workflow port support](workflow-port-support.md) — only specific ports are detected by the workflow system; non-standard ports (e.g. 19751) cause restart failures.

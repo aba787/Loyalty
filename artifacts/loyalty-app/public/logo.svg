@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047" />
+      <stop offset="50%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#D97706" />
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="40" fill="#0F172A" />
+  <path d="M50 120 L50 80 L75 100 L100 60 L125 100 L150 80 L150 120 Z" fill="url(#goldGradient)" />
+  <circle cx="100" cy="45" r="10" fill="#FEF08A" />
+  <circle cx="50" cy="65" r="8" fill="#FEF08A" />
+  <circle cx="150" cy="65" r="8" fill="#FEF08A" />
+  <text x="100" y="160" font-family="sans-serif" font-size="28" font-weight="bold" fill="#F8FAFC" text-anchor="middle">LoyalPro</text>
+</svg>

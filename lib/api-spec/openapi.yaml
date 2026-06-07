@@ -3,20 +3,34 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Loyalty & Referral System API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: customers
+    description: Customer management
+  - name: services
+    description: Service management
+  - name: points
+    description: Points management
+  - name: referrals
+    description: Referral management
+  - name: commissions
+    description: Commission management
+  - name: dashboard
+    description: Dashboard statistics
+  - name: me
+    description: Current customer (self) portal
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +38,650 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # ── Admin: Customers ────────────────────────────────────────────────────────
+  /admin/customers:
+    get:
+      operationId: listCustomers
+      tags: [customers]
+      summary: List all customers
+      responses:
+        "200":
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Customer"
+    post:
+      operationId: createCustomer
+      tags: [customers]
+      summary: Create a new customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+
+  /admin/customers/{id}:
+    get:
+      operationId: getCustomer
+      tags: [customers]
+      summary: Get a customer by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Customer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateCustomer
+      tags: [customers]
+      summary: Update a customer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+
+  # ── Admin: Services ─────────────────────────────────────────────────────────
+  /admin/customers/{customerId}/services:
+    post:
+      operationId: addService
+      tags: [services]
+      summary: Add a service to a customer (admin)
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+
+  /admin/services:
+    get:
+      operationId: listAllServices
+      tags: [services]
+      summary: List all services across all customers
+      responses:
+        "200":
+          description: List of services
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Service"
+
+  # ── Admin: Points ───────────────────────────────────────────────────────────
+  /admin/customers/{customerId}/points:
+    post:
+      operationId: adjustPoints
+      tags: [points]
+      summary: Add or deduct points for a customer (admin)
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PointAdjustment"
+      responses:
+        "201":
+          description: Point transaction created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PointTransaction"
+
+  /admin/points:
+    get:
+      operationId: listAllPoints
+      tags: [points]
+      summary: List all point transactions
+      responses:
+        "200":
+          description: List of point transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PointTransaction"
+
+  # ── Admin: Referrals ────────────────────────────────────────────────────────
+  /admin/referrals:
+    get:
+      operationId: listAllReferrals
+      tags: [referrals]
+      summary: List all referrals
+      responses:
+        "200":
+          description: List of referrals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Referral"
+
+  /admin/referrals/{id}:
+    patch:
+      operationId: updateReferral
+      tags: [referrals]
+      summary: Update referral status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReferralUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Referral"
+
+  # ── Admin: Commissions ──────────────────────────────────────────────────────
+  /admin/commissions:
+    get:
+      operationId: listAllCommissions
+      tags: [commissions]
+      summary: List all commissions
+      responses:
+        "200":
+          description: List of commissions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Commission"
+
+  /admin/commissions/{id}:
+    patch:
+      operationId: updateCommission
+      tags: [commissions]
+      summary: Update commission status (paid/unpaid)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommissionUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Commission"
+
+  # ── Admin: Dashboard ────────────────────────────────────────────────────────
+  /admin/dashboard/stats:
+    get:
+      operationId: getDashboardStats
+      tags: [dashboard]
+      summary: Get overall dashboard statistics
+      responses:
+        "200":
+          description: Dashboard stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /admin/dashboard/membership-breakdown:
+    get:
+      operationId: getMembershipBreakdown
+      tags: [dashboard]
+      summary: Count of customers per membership tier
+      responses:
+        "200":
+          description: Membership breakdown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MembershipCount"
+
+  /admin/dashboard/top-customers:
+    get:
+      operationId: getTopCustomers
+      tags: [dashboard]
+      summary: Top customers by points
+      responses:
+        "200":
+          description: Top customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Customer"
+
+  # ── Customer Portal (self) ──────────────────────────────────────────────────
+  /me/profile:
+    get:
+      operationId: getMyProfile
+      tags: [me]
+      summary: Get current customer's full profile
+      responses:
+        "200":
+          description: My profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        "404":
+          description: Not found
+
+  /me/services:
+    get:
+      operationId: getMyServices
+      tags: [me]
+      summary: Get current customer's service history
+      responses:
+        "200":
+          description: My services
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Service"
+
+  /me/points:
+    get:
+      operationId: getMyPoints
+      tags: [me]
+      summary: Get current customer's point transactions
+      responses:
+        "200":
+          description: My point transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PointTransaction"
+
+  /me/referrals:
+    get:
+      operationId: getMyReferrals
+      tags: [me]
+      summary: Get customers I referred
+      responses:
+        "200":
+          description: My referrals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Referral"
+
+  /me/commissions:
+    get:
+      operationId: getMyCommissions
+      tags: [me]
+      summary: Get my commissions earned from referrals
+      responses:
+        "200":
+          description: My commissions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Commission"
+
+  /me/discounts:
+    get:
+      operationId: getMyDiscounts
+      tags: [me]
+      summary: Get available discounts based on my points
+      responses:
+        "200":
+          description: My available discounts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiscountInfo"
+
+  # ── Auth: link Clerk user to customer record ────────────────────────────────
+  /auth/me:
+    get:
+      operationId: getAuthMe
+      tags: [me]
+      summary: Resolve current Clerk user to a customer record
+      responses:
+        "200":
+          description: Customer record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        "404":
+          description: Not linked yet
+
 components:
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
         status:
           type: string
-      required:
-        - status
 
+    Customer:
+      type: object
+      required: [id, name, email, referralCode, totalPoints, totalSpent, servicesCount, referralCount, membershipLevel, createdAt]
+      properties:
+        id:
+          type: integer
+        clerkUserId:
+          type: ["string", "null"]
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: ["string", "null"]
+        referralCode:
+          type: string
+        referredByCode:
+          type: ["string", "null"]
+        totalPoints:
+          type: integer
+        totalSpent:
+          type: number
+        servicesCount:
+          type: integer
+        referralCount:
+          type: integer
+        membershipLevel:
+          type: string
+          enum: [Bronze, Silver, Gold, Platinum]
+        createdAt:
+          type: string
+          format: date-time
+
+    CustomerInput:
+      type: object
+      required: [name, email]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        referredByCode:
+          type: string
+
+    CustomerUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        clerkUserId:
+          type: string
+
+    Service:
+      type: object
+      required: [id, customerId, name, amount, pointsEarned, createdAt]
+      properties:
+        id:
+          type: integer
+        customerId:
+          type: integer
+        customerName:
+          type: ["string", "null"]
+        name:
+          type: string
+        description:
+          type: ["string", "null"]
+        amount:
+          type: number
+        pointsEarned:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+
+    ServiceInput:
+      type: object
+      required: [name, amount]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        amount:
+          type: number
+          minimum: 0
+        customPoints:
+          type: ["integer", "null"]
+
+    PointTransaction:
+      type: object
+      required: [id, customerId, points, type, reason, createdAt]
+      properties:
+        id:
+          type: integer
+        customerId:
+          type: integer
+        customerName:
+          type: ["string", "null"]
+        points:
+          type: integer
+        type:
+          type: string
+          enum: [earn, deduct, referral_bonus]
+        reason:
+          type: string
+        serviceId:
+          type: ["integer", "null"]
+        referralId:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    PointAdjustment:
+      type: object
+      required: [points, type, reason]
+      properties:
+        points:
+          type: integer
+          minimum: 1
+        type:
+          type: string
+          enum: [earn, deduct]
+        reason:
+          type: string
+          minLength: 1
+
+    Referral:
+      type: object
+      required: [id, referrerId, referredId, status, rewardType, rewardValue, createdAt]
+      properties:
+        id:
+          type: integer
+        referrerId:
+          type: integer
+        referrerName:
+          type: ["string", "null"]
+        referredId:
+          type: integer
+        referredName:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [pending, confirmed, rejected]
+        rewardType:
+          type: string
+          enum: [points, percentage]
+        rewardValue:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+
+    ReferralUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [pending, confirmed, rejected]
+
+    Commission:
+      type: object
+      required: [id, customerId, referralId, amount, status, createdAt]
+      properties:
+        id:
+          type: integer
+        customerId:
+          type: integer
+        customerName:
+          type: ["string", "null"]
+        referralId:
+          type: integer
+        amount:
+          type: number
+        status:
+          type: string
+          enum: [pending, paid]
+        createdAt:
+          type: string
+          format: date-time
+
+    CommissionUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [pending, paid]
+
+    DashboardStats:
+      type: object
+      required: [totalCustomers, totalPoints, totalRevenue, totalReferrals, totalCommissionsPaid, pendingCommissions]
+      properties:
+        totalCustomers:
+          type: integer
+        totalPoints:
+          type: integer
+        totalRevenue:
+          type: number
+        totalReferrals:
+          type: integer
+        totalCommissionsPaid:
+          type: number
+        pendingCommissions:
+          type: number
+
+    MembershipCount:
+      type: object
+      required: [level, count]
+      properties:
+        level:
+          type: string
+          enum: [Bronze, Silver, Gold, Platinum]
+        count:
+          type: integer
+
+    DiscountInfo:
+      type: object
+      required: [currentPoints, availableDiscount, discountTiers]
+      properties:
+        currentPoints:
+          type: integer
+        availableDiscount:
+          type: number
+        discountTiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/DiscountTier"
+
+    DiscountTier:
+      type: object
+      required: [pointsRequired, discountPercent, achieved]
+      properties:
+        pointsRequired:
+          type: integer
+        discountPercent:
+          type: number
+        achieved:
+          type: boolean
