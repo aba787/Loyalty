@@ -1,0 +1,142 @@
+CREATE TABLE users (
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+name TEXT,
+email TEXT UNIQUE,
+phone TEXT,
+points INTEGER DEFAULT 0,
+tier TEXT DEFAULT 'Bronze',
+referral_code TEXT UNIQUE,
+referred_by TEXT,
+total_referrals INTEGER DEFAULT 0,
+created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE transactions (
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+user_id UUID REFERENCES users(id),
+type TEXT,
+points INTEGER,
+reason TEXT,
+created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE referrals (
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+referrer_id UUID REFERENCES users(id),
+referred_user_id UUID REFERENCES users(id),
+reward_points INTEGER,
+status TEXT,
+created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE rewards (
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+title TEXT,
+points_required INTEGER,
+active BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE tiers (
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+name TEXT,
+min_points INTEGER,
+benefits TEXT[]
+);
+
+ثم اضغطي:
+
+Run
+4. أضيفي مستويات العضوية
+
+افتحي Query جديد والصقي:
+
+INSERT INTO tiers (name, min_points, benefits)
+VALUES
+(
+'Bronze',
+0,
+ARRAY['Basic Rewards']
+),
+(
+'Silver',
+500,
+ARRAY['Priority Support']
+),
+(
+'Gold',
+1000,
+ARRAY['Exclusive Discounts']
+);
+
+ثم Run.
+
+أضيفي مكافآت تجريبية
+INSERT INTO rewards (title, points_required, active)
+VALUES
+('10% Discount',100,true),
+('Free Consultation',500,true);
+أضيفي مستخدم تجريبي
+INSERT INTO users
+(
+name,
+email,
+phone,
+points,
+tier,
+referral_code,
+total_referrals
+)
+VALUES
+(
+'Lola',
+'lola@example.com',
+'0500000000',
+250,
+'Gold',
+'LOLA123',
+5
+);
+بعدها يصير عندك جاهز:
+
+users
+transactions
+referrals
+rewards
+tiersPublishable key
+This key is safe to use in a browser if you have enabled Row Level Security (RLS) for your tables and configured policies.
+
+New publishable key
+Name API Key
+default
+No description
+sb_publishable_A3qTVccPFsjamZ5PPibjcA_V6uyMBM0
+
+Publishable keys can be safely shared publicly
+
+Secret keys
+These API keys allow privileged access to your project's APIs. Use in servers, functions, workers or other backend components of your application.
+
+New secret key
+Name API Key
+default
+No description
+sb_secret_AE6f2
+••••••••••••••••
+
+Background pattern
+
+Notice
+We've updated our Terms of Service
+
+Updates define the responsibilities of both you and Supabase in the use of AI.
+
+Learn more
+API Keys | Settings | aba787's Project | Loyalty | Supabaseanon
+public
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhpZHhzYmxhdmJ4cWd2ZWdyenRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4Njk4MTUsImV4cCI6MjA5NzQ0NTgxNX0._DSaP2fdw5wIx552Ed3_efCbCehuQOZTU4fHA-HQGWc
+This key is safe to use in a browser if you have enabled Row Level Security for your tables and configured policies. Prefer using Publishable API keys instead.
+
+service_role
+secret
+•••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
+This key has the ability to bypass Row Level Security. Never share it publicly. If leaked, generate a new JWT secret immediately. Prefer using Secret API keys instead.
