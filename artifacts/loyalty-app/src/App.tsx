@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import { ClerkProvider, SignIn, SignUp, Show, useClerk, useUser } from '@clerk/react';
 import { publishableKeyFromHost } from '@clerk/react/internal';
 import { shadcn } from '@clerk/themes';
@@ -7,19 +7,19 @@ import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/reac
 import { Toaster } from "@/components/ui/toaster";
 import { useGetAuthMe } from "@workspace/api-client-react";
 
-import LandingPage from "@/pages/landing";
-import AdminDashboard from "@/pages/admin/dashboard";
-import AdminCustomers from "@/pages/admin/customers";
-import AdminCustomerDetail from "@/pages/admin/customer-detail";
-import AdminServices from "@/pages/admin/services";
-import AdminPoints from "@/pages/admin/points";
-import AdminReferrals from "@/pages/admin/referrals";
-import AdminCommissions from "@/pages/admin/commissions";
-import PortalHome from "@/pages/portal/home";
-import PortalServices from "@/pages/portal/services";
-import PortalPoints from "@/pages/portal/points";
-import PortalReferrals from "@/pages/portal/referrals";
-import PortalCommissions from "@/pages/portal/commissions";
+const LandingPage        = lazy(() => import("@/pages/landing"));
+const AdminDashboard     = lazy(() => import("@/pages/admin/dashboard"));
+const AdminCustomers     = lazy(() => import("@/pages/admin/customers"));
+const AdminCustomerDetail = lazy(() => import("@/pages/admin/customer-detail"));
+const AdminServices      = lazy(() => import("@/pages/admin/services"));
+const AdminPoints        = lazy(() => import("@/pages/admin/points"));
+const AdminReferrals     = lazy(() => import("@/pages/admin/referrals"));
+const AdminCommissions   = lazy(() => import("@/pages/admin/commissions"));
+const PortalHome         = lazy(() => import("@/pages/portal/home"));
+const PortalServices     = lazy(() => import("@/pages/portal/services"));
+const PortalPoints       = lazy(() => import("@/pages/portal/points"));
+const PortalReferrals    = lazy(() => import("@/pages/portal/referrals"));
+const PortalCommissions  = lazy(() => import("@/pages/portal/commissions"));
 import AdminLayout from "@/components/layout/admin-layout";
 import PortalLayout from "@/components/layout/portal-layout";
 import NotFound from "@/pages/not-found";
@@ -86,6 +86,14 @@ const clerkAppearance = {
   },
 };
 
+function PageLoader() {
+  return (
+    <div className="min-h-[100dvh] flex items-center justify-center bg-background">
+      <div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+    </div>
+  );
+}
+
 function SignInPage() {
   return (
     <div className="flex min-h-[100dvh] items-center justify-center bg-background px-4">
@@ -124,8 +132,8 @@ function ClerkQueryClientCacheInvalidator() {
 function HomeRedirect() {
   const { user, isLoaded } = useUser();
   const isAdmin = user?.publicMetadata?.role === 'admin' || user?.emailAddresses?.[0]?.emailAddress?.endsWith('@loyalpro.com');
-  
-  if (!isLoaded) return <div className="min-h-[100dvh] flex items-center justify-center bg-background"><div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"></div></div>;
+
+  if (!isLoaded) return <PageLoader />;
 
   return (
     <>
@@ -133,7 +141,9 @@ function HomeRedirect() {
         {isAdmin ? <Redirect to="/admin" /> : <Redirect to="/portal" />}
       </Show>
       <Show when="signed-out">
-        <LandingPage />
+        <Suspense fallback={<PageLoader />}>
+          <LandingPage />
+        </Suspense>
       </Show>
     </>
   );
@@ -142,26 +152,35 @@ function HomeRedirect() {
 function AdminRouteGuard({ component: Component }: { component: React.ComponentType }) {
   const { user, isLoaded } = useUser();
   const isAdmin = user?.publicMetadata?.role === 'admin' || user?.emailAddresses?.[0]?.emailAddress?.endsWith('@loyalpro.com');
-  
+
   if (!isLoaded) return null;
   if (!isAdmin) return <Redirect to="/portal" />;
-  
+
   return (
     <AdminLayout>
-      <Component />
+      <Suspense fallback={<PageLoader />}>
+        <Component />
+      </Suspense>
     </AdminLayout>
   );
 }
 
 function PortalRouteGuard({ component: Component }: { component: React.ComponentType }) {
   const { data: customer, isLoading, error } = useGetAuthMe({ query: { retry: false, queryKey: ["auth", "me"] } });
-  
-  if (isLoading) return <div className="min-h-[100dvh] flex items-center justify-center bg-background"><div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"></div></div>;
-  if (error) return <div className="min-h-[100dvh] flex items-center justify-center bg-background text-white flex-col gap-4"><h2>Account not found</h2><p>Please contact support to link your account.</p></div>;
+
+  if (isLoading) return <PageLoader />;
+  if (error) return (
+    <div className="min-h-[100dvh] flex items-center justify-center bg-background text-white flex-col gap-4">
+      <h2>Account not found</h2>
+      <p>Please contact support to link your account.</p>
+    </div>
+  );
 
   return (
     <PortalLayout>
-      <Component />
+      <Suspense fallback={<PageLoader />}>
+        <Component />
+      </Suspense>
     </PortalLayout>
   );
 }
@@ -189,7 +208,7 @@ function ClerkProviderWithRoutes() {
           <Route path="/" component={HomeRedirect} />
           <Route path="/sign-in/*?" component={SignInPage} />
           <Route path="/sign-up/*?" component={SignUpPage} />
-          
+
           <Route path="/admin">
             <Show when="signed-in"><AdminRouteGuard component={AdminDashboard} /></Show>
             <Show when="signed-out"><Redirect to="/sign-in" /></Show>
@@ -218,7 +237,7 @@ function ClerkProviderWithRoutes() {
             <Show when="signed-in"><AdminRouteGuard component={AdminCommissions} /></Show>
             <Show when="signed-out"><Redirect to="/sign-in" /></Show>
           </Route>
-          
+
           <Route path="/portal">
             <Show when="signed-in"><PortalRouteGuard component={PortalHome} /></Show>
             <Show when="signed-out"><Redirect to="/sign-in" /></Show>
