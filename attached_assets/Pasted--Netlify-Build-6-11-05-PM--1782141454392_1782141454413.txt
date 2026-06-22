@@ -1,0 +1,65 @@
+ Netlify Build                                                 
+6:11:05 PM: ────────────────────────────────────────────────────────────────
+6:11:05 PM: ​
+6:11:05 PM: ❯ Version
+6:11:05 PM:   @netlify/build 36.0.0
+6:11:05 PM: ​
+6:11:05 PM: ❯ Flags
+6:11:05 PM:   accountId: 68c25b205db051279e5fe856
+6:11:05 PM:   baseRelDir: true
+6:11:05 PM:   buildId: 6a39507923fcc74d2fbdef94
+6:11:05 PM:   deployId: 6a39507923fcc74d2fbdef96
+6:11:05 PM:   packagePath: artifacts/loyalty-app
+6:11:05 PM: ​
+6:11:05 PM: ❯ Current directory
+6:11:05 PM:   /opt/build/repo
+6:11:05 PM: ​
+6:11:05 PM: ❯ Config file
+6:11:05 PM:   No config file was defined: using default values.
+6:11:05 PM: ​
+6:11:05 PM: ❯ Context
+6:11:05 PM:   production
+6:11:05 PM: ​
+6:11:05 PM: Build command from Netlify app                                
+6:11:05 PM: ────────────────────────────────────────────────────────────────
+6:11:05 PM: ​
+6:11:05 PM: $ pnpm --filter @workspace/loyalty-app... run build
+6:11:05 PM: Scope: 2 of 9 workspace projects
+6:11:05 PM: artifacts/loyalty-app build$ vite build --config vite.config.ts
+6:11:05 PM: artifacts/loyalty-app build: failed to load config from /opt/build/repo/artifacts/loyalty-app/vite.config.ts
+6:11:05 PM: artifacts/loyalty-app build: error during build:
+6:11:05 PM: artifacts/loyalty-app build: Error: PORT environment variable is required but was not provided.
+6:11:05 PM: artifacts/loyalty-app build:     at file:///opt/build/repo/artifacts/loyalty-app/node_modules/.vite-temp/vite.config.ts.timestamp-1782141065828-143cc8f122387.mjs:10:9
+6:11:05 PM: artifacts/loyalty-app build:     at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+6:11:05 PM: artifacts/loyalty-app build:     at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+6:11:05 PM: artifacts/loyalty-app build:     at async loadConfigFromBundledFile (file:///opt/build/repo/node_modules/.pnpm/vite@7.3.3_@types+node@25.6.2_jiti@2.7.0_lightningcss@1.32.0_tsx@4.21.0_yaml@2.8.4/node_modules/vite/dist/node/chunks/config.js:35936:12)
+6:11:05 PM: artifacts/loyalty-app build:     at async bundleAndLoadConfigFile (file:///opt/build/repo/node_modules/.pnpm/vite@7.3.3_@types+node@25.6.2_jiti@2.7.0_lightningcss@1.32.0_tsx@4.21.0_yaml@2.8.4/node_modules/vite/dist/node/chunks/config.js:35824:17)
+6:11:05 PM: artifacts/loyalty-app build:     at async loadConfigFromFile (file:///opt/build/repo/node_modules/.pnpm/vite@7.3.3_@types+node@25.6.2_jiti@2.7.0_lightningcss@1.32.0_tsx@4.21.0_yaml@2.8.4/node_modules/vite/dist/node/chunks/config.js:35791:42)
+6:11:05 PM: artifacts/loyalty-app build:     at async resolveConfig (file:///opt/build/repo/node_modules/.pnpm/vite@7.3.3_@types+node@25.6.2_jiti@2.7.0_lightningcss@1.32.0_tsx@4.21.0_yaml@2.8.4/node_modules/vite/dist/node/chunks/config.js:35440:22)
+6:11:05 PM: artifacts/loyalty-app build:     at async createBuilder (file:///opt/build/repo/node_modules/.pnpm/vite@7.3.3_@types+node@25.6.2_jiti@2.7.0_lightningcss@1.32.0_tsx@4.21.0_yaml@2.8.4/node_modules/vite/dist/node/chunks/config.js:33895:19)
+6:11:05 PM: artifacts/loyalty-app build:     at async CAC.<anonymous> (file:///opt/build/repo/node_modules/.pnpm/vite@7.3.3_@types+node@25.6.2_jiti@2.7.0_lightningcss@1.32.0_tsx@4.21.0_yaml@2.8.4/node_modules/vite/dist/node/cli.js:629:10)
+6:11:05 PM: artifacts/loyalty-app build: Failed
+6:11:05 PM: /opt/build/repo/artifacts/loyalty-app:
+6:11:05 PM:  ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @workspace/loyalty-app@0.0.0 build: `vite build --config vite.config.ts`
+6:11:05 PM: Exit status 1
+6:11:06 PM: Failed during stage 'building site': Build script returned non-zero exit code: 2
+6:11:06 PM: ​
+6:11:06 PM: "build.command" failed                                        
+6:11:06 PM: ────────────────────────────────────────────────────────────────
+6:11:06 PM: ​
+6:11:06 PM:   Error message
+6:11:06 PM:   Command failed with exit code 1: pnpm --filter @workspace/loyalty-app... run build
+6:11:06 PM: ​
+6:11:06 PM:   Error location
+6:11:06 PM:   In Build command from Netlify app:
+6:11:06 PM:   pnpm --filter @workspace/loyalty-app... run build
+6:11:06 PM: ​
+6:11:06 PM:   Resolved config
+6:11:06 PM:   build:
+6:11:06 PM:     command: pnpm --filter @workspace/loyalty-app... run build
+6:11:06 PM:     commandOrigin: ui
+6:11:06 PM:     publish: /opt/build/repo/artifacts/loyalty-app/dist
+6:11:06 PM:     publishOrigin: ui
+6:11:06 PM: Build failed due to a user error: Build script returned non-zero exit code: 2
+6:11:06 PM: Failing build: Failed to build site
+6:11:07 PM: Finished processing build request in 16.687s
